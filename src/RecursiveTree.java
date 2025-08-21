@@ -37,7 +37,7 @@ public class RecursiveTree {
         // If directory, list files and drill down into subdirectories
         if(attr.isDirectory()) {
             DirectoryStream<Path> paths = Files.newDirectoryStream(path);
-            stringBuild.append(getDepthIndent(depth)).append(" -- ").append(path.getFileName()).append("\n");
+            stringBuild.append(getDepthIndent(depth)).append(" > ").append(path.getFileName()).append("\n");
 
             for(Path subdirectory : paths) {
                 stringBuild.append(getDirectory(subdirectory, depth + 1));
