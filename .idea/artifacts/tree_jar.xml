@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="tree:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/tree_jar</output-path>
+    <root id="archive" name="tree.jar">
+      <element id="module-output" name="tree" />
+    </root>
+  </artifact>
+</component>
