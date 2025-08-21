@@ -1,8 +1,6 @@
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Scanner;
 
 /**
  * Jacob Whitney
@@ -18,9 +16,9 @@ public class RecursiveTree {
 
     // Constructor
     public RecursiveTree() throws Exception {
-        Path currentPath = Paths.get(System.getProperty("user.dir"));
+        Path path = Paths.get(getPath());
         try {
-            System.out.println(getDirectory(currentPath, 0));
+            System.out.println(getDirectory(path, 0));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -30,6 +28,25 @@ public class RecursiveTree {
 
 
     // Custom Methods
+    public String getPath() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter path: ");
+        String pathStr = sc.nextLine();
+        try {
+            Path path = Paths.get(pathStr);
+
+            if(!Files.exists(path)) {
+                System.out.println("  > E: Path does not exist");
+                pathStr = getPath();
+            }
+
+        } catch (InvalidPathException e) {
+            System.out.println("  > E: Path does not exist");
+            pathStr = getPath();
+        }
+        return pathStr;
+    }
+
     public String getDirectory(Path path, int depth) throws Exception {
         StringBuilder stringBuild = new StringBuilder();
         BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
@@ -37,13 +54,21 @@ public class RecursiveTree {
         // If directory, list files and drill down into subdirectories
         if(attr.isDirectory()) {
             DirectoryStream<Path> paths = Files.newDirectoryStream(path);
-            stringBuild.append(getDepthIndent(depth)).append(" > ").append(path.getFileName()).append("\n");
+            long fileCount = Files.list(path).count();
+            stringBuild.append(getDepthIndent(depth)).append(" >> ").append(path.getFileName());
+            stringBuild.append(" (").append(attr.size()).append(" bytes, ");
+            if(fileCount == 1) {
+                stringBuild.append(fileCount).append(" file)").append("\n");
+            } else {
+                stringBuild.append(fileCount).append(" files)").append("\n");
+            }
+
 
             for(Path subdirectory : paths) {
                 stringBuild.append(getDirectory(subdirectory, depth + 1));
             }
         } else {
-            stringBuild.append(getDepthIndent(depth)).append(" -- ").append(path.getFileName()).append("\n");
+            stringBuild.append(getDepthIndent(depth)).append(" -- ").append(path.getFileName()).append(" (" + attr.size() + " bytes) ").append("\n");
         }
         return stringBuild.toString();
     }
